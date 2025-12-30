@@ -11,11 +11,25 @@ import {
 import express from 'express';
 import { PdfService } from './pdf.service';
 import { GeneratePdfDto } from './dto/generate-pdf.dto';
+import { IsOptional, IsString, IsIn, IsUrl } from 'class-validator';
 
-interface GeneratePdfFromUrlDto {
+class GeneratePdfFromUrlDto {
+  @IsUrl()
   url: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['A4', 'A3', 'Letter'])
   format?: string;
+
+  @IsOptional()
+  @IsString()
   filename?: string;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['landscape', 'portrait'])
+  orientation?: string;
 }
 
 @Controller('pdf')
@@ -73,11 +87,13 @@ export class PdfController {
       const pdfBuffer = await this.pdfService.generatePdfFromUrl(
         body.url,
         body.format,
+        body.orientation,
       );
 
       res.set({
         'Content-Type': 'application/pdf',
         'Content-Disposition': `attachment; filename="${body.filename || 'document.pdf'}"`,
+
         'Content-Length': pdfBuffer.length.toString(),
       });
 

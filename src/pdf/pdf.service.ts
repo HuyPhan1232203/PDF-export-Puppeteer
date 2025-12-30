@@ -11,7 +11,7 @@ import { GeneratePdfDto } from './dto/generate-pdf.dto';
 @Injectable()
 export class PdfService implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(PdfService.name);
-  // eslint-disable-next-line @typescript-eslint/no-redundant-type-constituents
+
   private browser: Browser | null = null;
 
   async onModuleInit(): Promise<void> {
@@ -43,7 +43,7 @@ export class PdfService implements OnModuleInit, OnModuleDestroy {
       throw new Error('Browser is not initialized');
     }
 
-    const { html, format, margins } = generatePdfDto;
+    const { html, format, margins, orientation } = generatePdfDto;
     let page: Page | null = null;
 
     try {
@@ -56,6 +56,7 @@ export class PdfService implements OnModuleInit, OnModuleDestroy {
       const pdfBuffer = await page.pdf({
         format: format as 'A4' | 'A3' | 'Letter',
         printBackground: true,
+        landscape: orientation === 'landscape',
         margin: {
           top: margins?.top || '20px',
           right: margins?.right || '20px',
@@ -82,7 +83,8 @@ export class PdfService implements OnModuleInit, OnModuleDestroy {
 
   async generatePdfFromUrl(
     url: string,
-    format: string = 'A4',
+    format?: string,
+    orientation?: string,
   ): Promise<Buffer> {
     if (!this.browser) {
       throw new Error('Browser is not initialized');
@@ -98,11 +100,18 @@ export class PdfService implements OnModuleInit, OnModuleDestroy {
       });
 
       const pdfBuffer = await page.pdf({
-        format: format as 'A4' | 'A3' | 'Letter',
+        format: (format as 'A4' | 'A3' | 'Letter') || 'A4',
         printBackground: true,
+        landscape: orientation === 'landscape',
+        margin: {
+          top: '20px',
+          right: '20px',
+          bottom: '20px',
+          left: '20px',
+        },
       });
 
-      this.logger.log(`PDF generated successfully from URL: ${url}`);
+      this.logger.log('PDF generated from URL successfully');
       return Buffer.from(pdfBuffer);
     } catch (error) {
       const errorMessage =

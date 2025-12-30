@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsObject,
+  IsIn,
 } from 'class-validator';
 
 export enum PageFormat {
@@ -36,4 +37,9 @@ export class GeneratePdfDto {
   @IsOptional()
   @IsObject()
   margins?: Margins;
+
+  @IsOptional()
+  @IsString()
+  @IsIn(['landscape', 'portrait'])
+  orientation?: string;
 }
