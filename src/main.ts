@@ -12,6 +12,8 @@ async function bootstrap() {
   // Enable validation
   app.useGlobalPipes(new ValidationPipe());
 
-  await app.listen(5002);
+  const port = process.env.PORT || 3000;
+  await app.listen(port, '0.0.0.0'); // Phải bind 0.0.0.0
+  console.log(`🚀 Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
