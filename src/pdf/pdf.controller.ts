@@ -8,7 +8,7 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import express from 'express';
+import type { Response } from 'express';
 import { PdfService } from './pdf.service';
 import { GeneratePdfDto } from './dto/generate-pdf.dto';
 import { IsOptional, IsString, IsIn, IsUrl } from 'class-validator';
@@ -40,7 +40,7 @@ export class PdfController {
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async generatePdf(
     @Body() generatePdfDto: GeneratePdfDto,
-    @Res() res: express.Response,
+    @Res() res: Response,
   ): Promise<void> {
     try {
       const pdfBuffer = await this.pdfService.generatePdf(generatePdfDto);
@@ -71,7 +71,7 @@ export class PdfController {
   @UsePipes(new ValidationPipe({ transform: true, whitelist: true }))
   async generatePdfFromUrl(
     @Body() body: GeneratePdfFromUrlDto,
-    @Res() res: express.Response,
+    @Res() res: Response,
   ): Promise<void> {
     try {
       if (!body.url) {

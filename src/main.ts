@@ -1,4 +1,3 @@
-// src/main.ts
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
@@ -12,8 +11,9 @@ async function bootstrap() {
   // Enable validation
   app.useGlobalPipes(new ValidationPipe());
 
-  const port = process.env.PORT || 3000;
-  await app.listen(port, '0.0.0.0'); // Phải bind 0.0.0.0
-  console.log(`🚀 Application is running on: ${await app.getUrl()}`);
+  // ✅ FIX: Listen port 3000 (internal) + bind 0.0.0.0 cho Docker
+  await app.listen(3000, '0.0.0.0');
+
+  console.log('🚀 Docx API running on http://0.0.0.0:3000');
 }
 bootstrap();
